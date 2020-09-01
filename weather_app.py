@@ -1,7 +1,7 @@
 from tkinter import *
 import requests
 import json
-from api_keys import weather_app_key
+from keys_and_passwords import weather_app_key
 
 
 root = Tk()
