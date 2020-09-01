@@ -3,6 +3,10 @@ import sqlite3
 
 
 root = Tk()
+root.title('Database app')
+root.geometry('300x400')
+
+widget_width = 30
 
 # create connection
 conn = sqlite3.connect('address_book.db')
@@ -11,19 +15,19 @@ conn = sqlite3.connect('address_book.db')
 cur = conn.cursor()
 
 # create table ( drop if exists)
-cur.execute('DROP TABLE IF EXISTS addresses')
-cur.execute(
-    """
-    CREATE TABLE addresses(
-    first_name text,
-    last_name text,
-    address text,
-    city text,
-    state text,
-    zipcode integer
-    )
-    """
-)
+# cur.execute('DROP TABLE IF EXISTS addresses')
+# cur.execute(
+#     """
+#     CREATE TABLE addresses(
+#     first_name text,
+#     last_name text,
+#     address text,
+#     city text,
+#     state text,
+#     zipcode integer
+#     )
+#     """
+# )
 
 
 def submit():   # submit func to add new record
@@ -59,21 +63,93 @@ def query():
 
     print_records = ''
     for record in records:
-        print_records += str(record[-1]) + ') ' + str(record[0]) + ' ' + str(record[1]) + '\n' + \
-                         str(record[2]) + ' ' + str(record[3]) + ' ' + str(record[4]) + ' ' + \
-                         str(record[5]) + '*' * 20 + '\n'
+        print_records += str(record[-1]) + ')\t' + str(record[0]) + ' ' + str(record[1]) + '\n'
 
     query_label = Label(root, text=print_records)
     query_label.grid(row=8, column=0, columnspan=2)
 
 
+def delete():
+    func_conn = sqlite3.connect('address_book.db')
+    func_cur = func_conn.cursor()
+
+    func_cur.execute('DELETE FROM addresses WHERE oid = ' + select_entry.get())
+
+    func_conn.commit()
+    func_conn.close()
+
+    select_entry.delete(0, END)
+
+
+def update():
+    update_window = Tk()
+    update_window.title('Update')
+    update_window.geometry('300x400')
+
+    func_conn = sqlite3.connect('address_book.db')
+    func_cur = func_conn.cursor()
+
+    record_id = select_entry.get()
+    
+    func_cur.execute('SELECT * FROM addresses WHERE oid = ' + record_id)
+    record_to_update = func_cur.fetchone()
+
+    # update gui
+    # labels
+    f_name_label_update = Label(update_window, text='First Name:')
+    f_name_label_update.grid(row=0, column=0, pady=(10, 0))
+
+    l_name_label_update = Label(update_window, text='Last Name:')
+    l_name_label_update.grid(row=1, column=0)
+
+    address_label_update = Label(update_window, text='Address:')
+    address_label_update.grid(row=2, column=0)
+
+    city_label_update = Label(update_window, text='City:')
+    city_label_update.grid(row=3, column=0)
+
+    state_label_update = Label(update_window, text='State:')
+    state_label_update.grid(row=4, column=0)
+
+    zipcode_label_update = Label(update_window, text='Zipcode:')
+    zipcode_label_update.grid(row=5, column=0)
+
+    # entries
+    f_name_entry_update = Entry(update_window, width=widget_width)
+    f_name_entry_update.grid(row=0, column=1, padx=20, pady=(10, 0))
+
+    l_name_entry_update = Entry(update_window, width=widget_width)
+    l_name_entry_update.grid(row=1, column=1)
+
+    address_entry_update = Entry(update_window, width=widget_width)
+    address_entry_update.grid(row=2, column=1)
+
+    city_entry_update = Entry(update_window, width=widget_width)
+    city_entry_update.grid(row=3, column=1)
+
+    state_entry_update = Entry(update_window, width=widget_width)
+    state_entry_update.grid(row=4, column=1)
+
+    zipcode_entry_update = Entry(update_window, width=widget_width)
+    zipcode_entry_update.grid(row=5, column=1)
+
+    # save button
+    save_btn = Button(update_window, text='Save', command=None)
+    save_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
+
+    # fill entries with values
+    f_name_entry_update.insert(0, record_to_update[0])
+    l_name_entry_update.insert(0, record_to_update[1])
+    address_entry_update.insert(0, record_to_update[2])
+    city_entry_update.insert(0, record_to_update[3])
+    state_entry_update.insert(0, record_to_update[4])
+    zipcode_entry_update.insert(0, record_to_update[5])
+
+
 # gui
-widget_width = 30
-
 # labels
-
 f_name_label = Label(root, text='First Name:')
-f_name_label.grid(row=0, column=0)
+f_name_label.grid(row=0, column=0, pady=(10, 0))
 
 l_name_label = Label(root, text='Last Name:')
 l_name_label.grid(row=1, column=0)
@@ -90,10 +166,13 @@ state_label.grid(row=4, column=0)
 zipcode_label = Label(root, text='Zipcode:')
 zipcode_label.grid(row=5, column=0)
 
+select_label = Label(root, text='Select ID:')
+select_label.grid(row=9, column=0)
+
 
 # entries
 f_name_entry = Entry(root, width=widget_width)
-f_name_entry.grid(row=0, column=1, padx=20)
+f_name_entry.grid(row=0, column=1, padx=20, pady=(10, 0))
 
 l_name_entry = Entry(root, width=widget_width)
 l_name_entry.grid(row=1, column=1)
@@ -110,6 +189,10 @@ state_entry.grid(row=4, column=1)
 zipcode_entry = Entry(root, width=widget_width)
 zipcode_entry.grid(row=5, column=1)
 
+select_entry = Entry(root, width=widget_width)
+select_entry.grid(row=9, column=1)
+
+
 # submit button
 submit_btn = Button(root, text='Submit', command=submit)
 submit_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
@@ -117,6 +200,14 @@ submit_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 # query button
 query_btn = Button(root, text='Display records', command=query)
 query_btn.grid(row=7, column=0, columnspan=2, pady=10, padx=10, ipadx=80)
+
+# delete button
+delete_btn = Button(root, text='Delete', command=delete)
+delete_btn.grid(row=10, column=0, columnspan=2, pady=10, padx=10, ipadx=80)
+
+# update button
+update_btn = Button(root, text='Update', command=update)
+update_btn.grid(row=11, column=0, columnspan=2, pady=10, padx=10, ipadx=80)
 
 # commit changes
 conn.commit()
