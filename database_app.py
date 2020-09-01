@@ -133,8 +133,34 @@ def update():
     zipcode_entry_update = Entry(update_window, width=widget_width)
     zipcode_entry_update.grid(row=5, column=1)
 
+    select_entry.delete(0, END)
+
+    def save():
+        func_cur.execute("""
+        UPDATE addresses SET
+        first_name = :first,
+        last_name = :last,
+        address = :address,
+        city = :city,
+        state = :state,
+        zipcode = :zipcode
+        WHERE oid = :oid
+        """,
+        {
+            'first': f_name_entry_update.get(),
+            'last': l_name_entry_update.get(),
+            'address': address_entry_update.get(),
+            'city': city_entry_update.get(),
+            'state': state_entry_update.get(),
+            'zipcode': zipcode_entry_update.get(),
+            'oid': record_id
+        })
+
+        func_conn.commit()
+        update_window.destroy()
+
     # save button
-    save_btn = Button(update_window, text='Save', command=None)
+    save_btn = Button(update_window, text='Save', command=save)
     save_btn.grid(row=6, column=0, columnspan=2, pady=10, padx=10, ipadx=100)
 
     # fill entries with values
