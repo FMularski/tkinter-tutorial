@@ -148,16 +148,33 @@ def add_customer():
     clear()
 
 
+def show():
+    show_window = Tk()
+    show_window.title('Customers')
+    show_window.geometry('800x600')
+
+    cursor.execute('SELECT * FROM customers')
+    result = cursor.fetchall()
+
+    records_label = Label(show_window)
+    records_label.pack()
+
+    for record in result:
+        records_label['text'] += f"""
+        #{record[4]} {record[0]} {record[1]}
+        {record[6]} {record[7]} {record[8]} {record[2]} {record[9]} {record[10]}
+        {record[5]} {record[11]}
+        {record[12]} {record[13]} {record[3]}\n
+        """
+
+
 add_button = Button(root, text='Add', width=10, command=add_customer)
 add_button.grid(row=14, column=0, pady=(15, 0))
-
 
 clear_button = Button(root, text='Clear', width=10, command=clear)
 clear_button.grid(row=14, column=1, pady=(15, 0))
 
-cursor.execute('SELECT * FROM customers')
-result = cursor.fetchall()
-for record in result:
-    print(record)
+show_button = Button(root, text='Show', width=10, command=show)
+show_button.grid(row=15, column=0, pady=(15, 0))
 
 root.mainloop()
