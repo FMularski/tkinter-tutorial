@@ -1,3 +1,4 @@
 .idea/
 keys_and_passwords.py
 __pycache__/
+customers_export.csv

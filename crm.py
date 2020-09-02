@@ -1,6 +1,7 @@
 from tkinter import *
 import mysql.connector
 from keys_and_passwords import mysql_root_pwd
+import csv
 
 
 root = Tk()
@@ -148,6 +149,13 @@ def add_customer():
     clear()
 
 
+def export(data):
+    with open('customers_export.csv', 'w') as f:
+        writer = csv.writer(f, dialect='excel')
+        for record in data:
+            writer.writerow(record)
+
+
 def show():
     show_window = Tk()
     show_window.title('Customers')
@@ -166,6 +174,9 @@ def show():
         {record[5]} {record[11]}
         {record[12]} {record[13]} {record[3]}\n
         """
+
+    export_button = Button(show_window, text='Export as csv', command=lambda: export(result))
+    export_button.pack()
 
 
 add_button = Button(root, text='Add', width=10, command=add_customer)
