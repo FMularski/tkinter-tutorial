@@ -206,7 +206,16 @@ def open_search():
         if not result:
             result = 'Record not found.'
 
-        result_label = Label(search_window, text=result)
+        result_text = ''
+        for record in result:
+            result_text += f"""
+        #{record[4]} {record[0]} {record[1]}
+        {record[6]} {record[7]} {record[8]} {record[2]} {record[9]} {record[10]}
+        {record[5]} {record[11]}
+        {record[12]} {record[13]} {record[3]}
+        """
+
+        result_label = Label(search_window, text=result_text)
         result_label.grid(row=1, column=0, columnspan=4, padx=10, pady=10)
 
     search_btn = Button(search_window, text='Search', command=search)
