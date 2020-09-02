@@ -2,6 +2,7 @@ from tkinter import *
 import mysql.connector
 from keys_and_passwords import mysql_root_pwd
 import csv
+from tkinter import ttk
 
 
 root = Tk()
@@ -179,6 +180,43 @@ def show():
     export_button.pack()
 
 
+def open_search():
+    search_window = Tk()
+    search_window.title('Search')
+    search_window.geometry('400x600')
+
+    search_label = Label(search_window, text='Search by')
+    search_label.grid(row=0, column=0, padx=10, pady=10)
+
+    search_entry = Entry(search_window)
+    search_entry.grid(row=0, column=2, padx=10, pady=10)
+
+    def search():
+        searched = search_entry.get()
+        searched_by = str(drop.get()).lower().replace(' ', '_')
+
+        sql_command = 'SELECT * FROM customers WHERE ' + searched_by + ' = %s'
+        param = searched,
+
+        cursor.execute(sql_command, param)
+        result = cursor.fetchall()
+
+        search_entry.delete(0, END)
+
+        if not result:
+            result = 'Record not found.'
+
+        result_label = Label(search_window, text=result)
+        result_label.grid(row=1, column=0, columnspan=4, padx=10, pady=10)
+
+    search_btn = Button(search_window, text='Search', command=search)
+    search_btn.grid(row=0, column=4, padx=10, pady=10)
+
+    drop = ttk.Combobox(search_window, value=['Last Name', 'Email', 'Customer Id'], width=12)
+    drop.current(0)
+    drop.grid(row=0, column=1)
+
+
 add_button = Button(root, text='Add', width=10, command=add_customer)
 add_button.grid(row=14, column=0, pady=(15, 0))
 
@@ -187,5 +225,8 @@ clear_button.grid(row=14, column=1, pady=(15, 0))
 
 show_button = Button(root, text='Show', width=10, command=show)
 show_button.grid(row=15, column=0, pady=(15, 0))
+
+search_button = Button(root, text='Search', width=10, command=open_search)
+search_button.grid(row=15, column=1, pady=(15, 0))
 
 root.mainloop()
